@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>熊绍渣男警示站</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif}
+body{
+background:linear-gradient(135deg,#ff416f 0%,#ff4b2b 100%);
+min-height:100vh;
+text-align:center;
+padding:40px 20px;
+animation:bg 1s infinite alternate;
+}
+@keyframes bg{
+from{filter:hue-rotate(0deg)}
+to{filter:hue-rotate(20deg)}
+}
+.container{max-width:900px;margin:0 auto}
+h1{
+font-size:60px;
+color:#fff;
+text-shadow:0 0 20px rgba(0,0,0,0.5);
+margin-bottom:20px;
+animation:shake 0.1s infinite alternate;
+}
+@keyframes shake{
+from{transform:translateY(0)}
+to{transform:translateY(-6px)}
+}
+.sub{
+font-size:24px;
+color:#ffc107;
+font-weight:bold;
+margin-bottom:30px;
+}
+/* 照片轮播容器 */
+.photo-container{
+position:relative;
+width:320px;
+height:400px;
+margin:0 auto 30px;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 0 20px rgba(0,0,0,0.3);
+background:#333;
+}
+.photo-container img{
+position:absolute;
+top:0;left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0;
+animation: slide 16s infinite;
+}
+.photo-container img:nth-child(1){animation-delay:0s}
+.photo-container img:nth-child(2){animation-delay:4s}
+.photo-container img:nth-child(3){animation-delay:8s}
+.photo-container img:nth-child(4){animation-delay:12s}
+@keyframes slide{
+0%{opacity:0}
+8%{opacity:1}
+20%{opacity:1}
+28%{opacity:0}
+100%{opacity:0}
+}
+.warn{
+background:rgba(0,0,0,0.4);
+color:#fff;
+font-size:22px;
+padding:20px;
+border-radius:16px;
+margin:30px 0;
+line-height:1.6;
+border:3px solid #ffc107;
+}
+.btn{
+padding:18px 45px;
+font-size:24px;
+background:#ff3d68;
+color:#fff;
+border:none;
+border-radius:50px;
+cursor:pointer;
+margin:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+transition:.2s;
+}
+.btn:hover{transform:scale(1.1)}
+.float{
+position:fixed;
+color:#ffeb3b;
+font-size:22px;
+font-weight:bold;
+pointer-events:none;
+animation:fly 6s linear forwards;
+}
+@keyframes fly{
+0%{opacity:1;bottom:0}
+100%{opacity:0;bottom:100vh}
+}
+</style>
+</head>
+
+<body onload="start()">
+<div class="container">
+<h1>熊绍渣男警示</h1>
+<div class="sub">风流花心 · 海王预警 · 女生快跑</div>
+
+<!-- 照片轮播（用本地文件） -->
+<div class="photo-container">
+    <img src="pic1.jpg" alt="照片1">
+    <img src="pic2.jpg" alt="照片2">
+    <img src="pic3.jpg" alt="照片3">
+    <img src="pic4.jpg" alt="照片4">
+</div>
+
+<div class="warn" id="tip">
+⚠️ 此人极度风流，擅长甜言蜜语<br>
+广撒网、爱暧昧、见一个撩一个<br>
+⚠️ 靠近的女生请务必提高警惕<br>
+保护好自己，别被花言巧语骗啦！
+</div>
+
+<button class="btn" onclick="boom()">点击查看渣男真相</button>
+</div>
+
+<script>
+// 语音提醒
+function say(){
+let u = new SpeechSynthesisUtterance();
+u.text="熊绍是风流海王，女生们注意安全，不要靠近，会变得不幸！";
+u.lang="zh-CN";
+u.volume=1;
+window.speechSynthesis.speak(u);
+}
+
+// 弹窗轰炸
+function boom(){
+say();
+setTimeout(()=>alert("⚠️ 熊绍：海王级选手，暧昧无数！"),200);
+setTimeout(()=>alert("⚠️ 擅长甜言蜜语，小心被套路！"),500);
+setTimeout(()=>alert("⚠️ 广撒网，不主动不拒绝不负责！"),800);
+setTimeout(()=>alert("⚠️ 女生们擦亮眼睛，保护好自己！"),1100);
+}
+
+// 漂浮警示语
+function fly(){
+let arr=[
+"女生快跑","海王预警","花心渣男","甜言蜜语",
+"小心套路","保护自己","远离渣男","别被迷惑"
+];
+setInterval(()=>{
+let d=document.createElement("div");
+d.className="float";
+d.innerText=arr[Math.floor(Math.random()*arr.length)];
+d.style.left=Math.random()*window.innerWidth+"px";
+document.body.appendChild(d);
+setTimeout(()=>d.remove(),6000);
+},800);
+}
+
+function start(){say();fly();setInterval(say,8000)}
+</script>
+</body>
+</html>

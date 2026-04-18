@@ -1,168 +1,66 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>熊绍渣男警示站</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif}
-body{
-background:linear-gradient(135deg,#ff416f 0%,#ff4b2b 100%);
-min-height:100vh;
-text-align:center;
-padding:40px 20px;
-animation:bg 1s infinite alternate;
-}
-@keyframes bg{
-from{filter:hue-rotate(0deg)}
-to{filter:hue-rotate(20deg)}
-}
-.container{max-width:900px;margin:0 auto}
-h1{
-font-size:60px;
-color:#fff;
-text-shadow:0 0 20px rgba(0,0,0,0.5);
-margin-bottom:20px;
-animation:shake 0.1s infinite alternate;
-}
-@keyframes shake{
-from{transform:translateY(0)}
-to{transform:translateY(-6px)}
-}
-.sub{
-font-size:24px;
-color:#ffc107;
-font-weight:bold;
-margin-bottom:30px;
-}
-/* 照片轮播容器 */
-.photo-container{
-position:relative;
-width:320px;
-height:400px;
-margin:0 auto 30px;
-border-radius:16px;
-overflow:hidden;
-box-shadow:0 0 20px rgba(0,0,0,0.3);
-background:#333;
-}
-.photo-container img{
-position:absolute;
-top:0;left:0;
-width:100%;
-height:100%;
-object-fit:cover;
-opacity:0;
-animation: slide 16s infinite;
-}
-.photo-container img:nth-child(1){animation-delay:0s}
-.photo-container img:nth-child(2){animation-delay:4s}
-.photo-container img:nth-child(3){animation-delay:8s}
-.photo-container img:nth-child(4){animation-delay:12s}
-@keyframes slide{
-0%{opacity:0}
-8%{opacity:1}
-20%{opacity:1}
-28%{opacity:0}
-100%{opacity:0}
-}
-.warn{
-background:rgba(0,0,0,0.4);
-color:#fff;
-font-size:22px;
-padding:20px;
-border-radius:16px;
-margin:30px 0;
-line-height:1.6;
-border:3px solid #ffc107;
-}
-.btn{
-padding:18px 45px;
-font-size:24px;
-background:#ff3d68;
-color:#fff;
-border:none;
-border-radius:50px;
-cursor:pointer;
-margin:10px;
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
-transition:.2s;
-}
-.btn:hover{transform:scale(1.1)}
-.float{
-position:fixed;
-color:#ffeb3b;
-font-size:22px;
-font-weight:bold;
-pointer-events:none;
-animation:fly 6s linear forwards;
-}
-@keyframes fly{
-0%{opacity:1;bottom:0}
-100%{opacity:0;bottom:100vh}
-}
-</style>
-</head>
+</html>
+<div style="max-width:700px;margin:50px auto;padding:20px;">
+  <h2>点赞 & 评论区</h2>
 
-<body onload="start()">
-<div class="container">
-<h1>熊绍渣男警示</h1>
-<div class="sub">风流花心 · 海王预警 · 女生快跑</div>
+  <!-- 点赞 -->
+  <div style="margin-bottom:30px;">
+    <button id="likeBtn" style="padding:8px 16px;background:#42b983;color:white;border:none;border-radius:6px;cursor:pointer;">👍 点赞</button>
+    <span id="likeCount" style="margin-left:10px;">0</span>
+  </div>
 
-<!-- 照片轮播（用本地文件） -->
-<div class="photo-container">
-    <img src="pic1.jpg" alt="照片1">
-    <img src="pic2.jpg" alt="照片2">
-    <img src="pic3.jpg" alt="照片3">
-    <img src="pic4.jpg" alt="照片4">
-</div>
+  <!-- 评论输入 -->
+  <input type="text" id="username" placeholder="你的昵称" style="width:100%;padding:10px;margin:8px 0;box-sizing:border-box;">
+  <textarea id="content" rows="4" placeholder="写下评论..." style="width:100%;padding:10px;margin:8px 0;box-sizing:border-box;"></textarea>
+  <button id="submitBtn" style="padding:10px 16px;background:#007bff;color:white;border:none;border-radius:6px;cursor:pointer;">发布评论</button>
 
-<div class="warn" id="tip">
-⚠️ 此人极度风流，擅长甜言蜜语<br>
-广撒网、爱暧昧、见一个撩一个<br>
-⚠️ 靠近的女生请务必提高警惕<br>
-保护好自己，别被花言巧语骗啦！
-</div>
-
-<button class="btn" onclick="boom()">点击查看渣男真相</button>
+  <!-- 评论列表 -->
+  <div id="commentList" style="margin-top:20px;"></div>
 </div>
 
 <script>
-// 语音提醒
-function say(){
-let u = new SpeechSynthesisUtterance();
-u.text="熊绍是风流海王，女生们注意安全，不要靠近，会变得不幸！";
-u.lang="zh-CN";
-u.volume=1;
-window.speechSynthesis.speak(u);
+const API = 'https://77e001ce.r26.cpolar.top';
+
+async function loadLike() {
+  const res = await fetch(API + '/getLike');
+  const data = await res.json();
+  document.getElementById('likeCount').innerText = data.count;
 }
 
-// 弹窗轰炸
-function boom(){
-say();
-setTimeout(()=>alert("⚠️ 熊绍：海王级选手，暧昧无数！"),200);
-setTimeout(()=>alert("⚠️ 擅长甜言蜜语，小心被套路！"),500);
-setTimeout(()=>alert("⚠️ 广撒网，不主动不拒绝不负责！"),800);
-setTimeout(()=>alert("⚠️ 女生们擦亮眼睛，保护好自己！"),1100);
+document.getElementById('likeBtn').onclick = async () => {
+  await fetch(API + '/addLike',{method:'POST'});
+  loadLike();
+};
+
+async function loadComments() {
+  const res = await fetch(API + '/getComments');
+  const list = await res.json();
+  let html = '';
+  list.forEach(item=>{
+    html += `
+      <div style="border-bottom:1px solid #eee;padding:12px 0;">
+        <strong>${item.username}</strong>
+        <span style="font-size:12px;color:#999;margin-left:10px;">${new Date(item.create_time).toLocaleString()}</span>
+        <div>${item.content}</div>
+      </div>
+    `;
+  });
+  document.getElementById('commentList').innerHTML = html;
 }
 
-// 漂浮警示语
-function fly(){
-let arr=[
-"女生快跑","海王预警","花心渣男","甜言蜜语",
-"小心套路","保护自己","远离渣男","别被迷惑"
-];
-setInterval(()=>{
-let d=document.createElement("div");
-d.className="float";
-d.innerText=arr[Math.floor(Math.random()*arr.length)];
-d.style.left=Math.random()*window.innerWidth+"px";
-document.body.appendChild(d);
-setTimeout(()=>d.remove(),6000);
-},800);
-}
+document.getElementById('submitBtn').onclick = async () => {
+  const name = document.getElementById('username').value.trim();
+  const txt = document.getElementById('content').value.trim();
+  if(!name||!txt) return alert('请填昵称和内容');
 
-function start(){say();fly();setInterval(say,8000)}
+  await fetch(API+'/addComment',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:name,content:txt})
+  });
+  document.getElementById('content').value='';
+  loadComments();
+};
+
+loadLike();
+loadComments();
 </script>
-</body>
-</html>

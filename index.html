@@ -11,11 +11,6 @@
             min-height:100vh;
             text-align:center;
             padding:40px 20px;
-            animation: bg 1s infinite alternate;
-        }
-        @keyframes bg{
-            from{filter:brightness(1)}
-            to{filter:brightness(1.1)}
         }
         .box{
             background:#fff;
@@ -28,14 +23,27 @@
         h1{color:#ff416f;margin-bottom:20px;font-size:28px;}
         .img-box{margin:20px 0;}
         .img-box img{max-width:100%;border-radius:12px;margin-bottom:10px}
+        
+        .like-box{
+            margin:20px 0;
+            font-size:20px;
+        }
+        #likeBtn{
+            background:#ff416f;
+            color:white;
+            border:none;
+            padding:10px 25px;
+            border-radius:10px;
+            font-size:18px;
+            cursor:pointer;
+        }
+
         .comment-box{margin-top:30px;text-align:left;}
-        .input-area{margin-bottom:20px;}
         textarea{
             width:100%;
             padding:15px;
             border:2px solid #ff416f;
             border-radius:10px;
-            resize:none;
             height:100px;
             font-size:16px;
             outline:none;
@@ -48,9 +56,8 @@
             border-radius:8px;
             font-size:16px;
             cursor:pointer;
-            transition:0.3s;
+            margin-top:10px;
         }
-        button:hover{background:#e0355f;}
         .comment-item{
             background:#f8f8f8;
             padding:15px;
@@ -60,61 +67,87 @@
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>熊渣渣男警示站</h1>
-        <div class="img-box">
-            <img src="pic1.jpg">
-            <img src="pic2.jpg">
-            <img src="pic3.jpg">
-            <img src="pic4.jpg">
-        </div>
 
-        <div class="comment-box">
-            <h3>大家一起评论避雷渣男👇</h3>
-            <div class="input-area">
-                <textarea id="msg" placeholder="输入你的评论..."></textarea>
-                <button onclick="sendComment()">发布评论</button>
-            </div>
-            <div id="comment-list"></div>
-        </div>
+<div class="box">
+    <h1>熊渣渣男警示站</h1>
+
+    <div class="img-box">
+        <img src="pic1.jpg">
+        <img src="pic2.jpg">
+        <img src="pic3.jpg">
+        <img src="pic4.jpg">
     </div>
+
+    <!-- 点赞功能 -->
+    <div class="like-box">
+        <button id="likeBtn">👍 点赞 ( <span id="likeCount">0</span> )</button>
+    </div>
+
+    <!-- 评论功能 -->
+    <div class="comment-box">
+        <h3>大家一起评论避雷👇</h3>
+        <textarea id="msg" placeholder="输入评论..."></textarea>
+        <button onclick="sendComment()">发布评论</button>
+        <div id="comment-list"></div>
+    </div>
+</div>
 
 <script>
 const API = "https://77e001ce.r26.cpolar.top";
 
+// 加载点赞数
+async function loadLike() {
+    let res = await fetch(API + "/getLike");
+    let data = await res.json();
+    document.getElementById("likeCount").innerText = data.like;
+}
+
+// 点赞
+document.getElementById("likeBtn").onclick = async () => {
+    await fetch(API + "/like");
+    loadLike();
+};
+
+// 加载评论
 async function loadComment() {
-  try {
-    let r = await fetch(API + "/get");
-    let list = await r.json();
+    let res = await fetch(API + "/get");
+    let list = await res.json();
     let dom = document.getElementById("comment-list");
     dom.innerHTML = "";
     list.forEach(item => {
-      let div = document.createElement("div");
-      div.className = "comment-item";
-      div.innerText = item.content;
-      dom.appendChild(div);
+        let div = document.createElement("div");
+        div.className = "comment-item";
+        div.innerText = item.content;
+        dom.appendChild(div);
     });
-  } catch (e) { console.log(e); }
 }
 
+// 发布评论
 async function sendComment() {
-  let txt = document.getElementById("msg").value.trim();
-  if (!txt) { alert("请输入内容"); return; }
-  try {
+    let txt = document.getElementById("msg").value.trim();
+    if (!txt) return alert("请输入评论");
+    
     await fetch(API + "/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: txt })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: txt })
     });
+    
     document.getElementById("msg").value = "";
     loadComment();
-  } catch (e) { alert("发送失败"); }
 }
 
-window.onload = loadComment;
+// 初始化加载
+window.onload = () => {
+    loadLike();
+    loadComment();
+};
 </script>
+
 </body>
 </html>
+       
+
 
 
 
